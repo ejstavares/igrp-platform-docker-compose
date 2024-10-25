@@ -1,0 +1,133 @@
+services:
+  # PostgreSQL Database 
+  db:
+    # Using 16 Alpine version for light-weight purposes.
+    image: postgres:16-alpine
+    container_name: db
+    hostname: ${POSTGRES_HOSTNAME}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data2
+    restart: always
+    # setting shared memory for docker compose 
+    shm_size: 128mb
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    networks:
+        - igrp_network
+    env_file: ".env"
+
+  # Keycloak server 
+  javier-wayvant:
+    image: keycloak/keycloak:25.0.4
+    container_name: ${KEYCLOAK_HOSTNAME}
+    # hostname: ${KEYCLOAK_HOSTNAME}
+    command:
+      - start
+      - --import-realm
+      # - show-config
+      # - --f.eatures=admin-fine-grained-authz
+    environment:
+      KC_HOSTNAME: http://${KEYCLOAK_HOSTNAME}:8080
+      KC_HOSTNAME_PORT: ${KEYCLOAK_HOSTNAME_PORT}
+      KC_HOSTNAME_STRICT_BACKCHANNEL: false
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME_STRICT_HTTPS: false
+      KC_HEALTH_ENABLED: true
+      KEYCLOAK_ADMIN: ${KEYCLOAK_ADMIN}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_HOSTNAME_BACKCHANNEL_DYNAMIC: true
+      KC_DB: postgres
+      KC_DB_URL: jdbc:postgresql://db:5432/${POSTGRES_DB}
+      KC_DB_USERNAME: ${POSTGRES_USER}
+      KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
+      KEYCLOAK_IMPORT: ./igrp-user-management-api/igrp-user-management-api/imports/${KEYCLOAK_REALM}-realm.json
+    volumes:
+      - ./igrp-user-management-api/igrp-user-management/imports/:/opt/keycloak/data/import
+    ports:
+      - 8081:8080
+    restart: always
+    extra_hosts:
+      - "${KEYCLOAK_HOSTNAME}:host-gateway"
+    depends_on:
+      - db
+    env_file: ".env"
+    networks:
+        - igrp_network
+    healthcheck:
+      test:   [
+          "CMD-SHELL",
+          'exec 3<>/dev/tcp/localhost/8080; echo -e "GET /health/ready HTTP/1.1\nhost: localhost:8080\n" >&3; timeout --preserve-status 1 cat <&3 | grep -m 1 status | grep -m 1 UP; ERROR=$?; exec 3<&-; exec 3>&-; exit $ERROR'
+       ]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Minio server
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    restart: no
+    env_file: ".env"
+    environment:
+      MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
+      MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
+    volumes:
+      - ./data:/minio_data
+    ports:
+      - "9000:9000"
+      - "9001:9001"
+    command: server /data --console-address :9001
+    entrypoint: >
+      /bin/sh -c '
+        isAlive() { curl -sf http://127.0.0.1:9000/minio/health/live; }    # check if Minio is alive
+        minio $0 "$@" --quiet & echo $! > /tmp/minio.pid                   # start Minio in the background
+        while ! isAlive; do sleep 0.1; done                                # wait until Minio is alive
+        mc alias set minio http://127.0.0.1:9000 ${MINIO_ACCESS_KEY} ${MINIO_SECRET_KEY} # setup Minio client
+        mc mb minio/${MINIO_BUCKET_NAME}|| true                            # create a test bucket
+        mc anonymous set public minio/${MINIO_BUCKET_NAME}                 # make the test bucket public
+        kill -s INT $(cat /tmp/minio.pid) && rm /tmp/minio.pid             # stop Minio
+        while isAlive; do sleep 0.1; done                                  # wait until Minio is stopped
+        exec minio $0 "$@"                                                 # start Minio in the foreground
+      '
+
+  # User management API 
+  user-management-api:
+    build: ./igrp-user-management-api/
+    depends_on:
+        javier-wayvant:
+            condition: service_healthy
+      # - minio
+      # - db 
+    container_name: user-management
+    env_file: ".env"
+    ports: 
+      - "8080:8080"
+    networks:
+        - igrp_network
+    # restart: on-failure
+    
+
+  # App management API 
+  app-manager-api:
+    build: ./app-manager-api/
+    env_file: ".env"
+    container_name: app-manager
+    ports: 
+      - "8082:8082"
+    networks:
+        - igrp_network
+    depends_on:
+        javier-wayvant:
+            condition: service_healthy
+
+
+networks:
+  igrp_network:
+    driver: bridge
+volumes:
+  postgres_data:
+    driver: local
