@@ -46,7 +46,7 @@ services:
       KC_DB_PASSWORD: ${POSTGRES_PASSWORD}
       KEYCLOAK_IMPORT: ./igrp-user-management-api/igrp-user-management-api/imports/${KEYCLOAK_REALM}-realm.json
     volumes:
-      - ./igrp-user-management-api/igrp-user-management/imports/:/opt/keycloak/data/import
+      - ./data/:/opt/keycloak/data/import
     ports:
       - 8080:8080
     restart: always
