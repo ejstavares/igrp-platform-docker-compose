@@ -3,7 +3,7 @@ services:
   db:
     # Using 16 Alpine version for light-weight purposes.
     image: postgres:16-alpine
-    container_name: db
+    container_name: ${POSTGRES_HOSTNAME}
     hostname: ${POSTGRES_HOSTNAME}
     volumes:
       - postgres_data:/var/lib/postgresql/data2
@@ -11,7 +11,7 @@ services:
     # setting shared memory for docker compose 
     shm_size: 128mb
     ports:
-      - "5432:5432"
+      - 5432:5432
     environment:
       POSTGRES_DB: ${POSTGRES_DB}
       POSTGRES_USER: ${POSTGRES_USER}
@@ -29,7 +29,7 @@ services:
       - start
       - --import-realm
       # - show-config
-      # - --f.eatures=admin-fine-grained-authz
+      - --features=admin-fine-grained-authz
     environment:
       KC_HOSTNAME: http://${KEYCLOAK_HOSTNAME}:8080
       KC_HOSTNAME_PORT: ${KEYCLOAK_HOSTNAME_PORT}
@@ -96,23 +96,26 @@ services:
 
   # User management API 
   user-management-api:
-    build: ./igrp-user-management-api/
+    # build: ./igrp-user-management-api/
+    image: registry.nosi.cv/bittortest/igrp-user-management-api:demo
     depends_on:
         keycloak:
             condition: service_healthy
       # - minio
       # - db 
     container_name: user-management
-    env_file: ".env"
+    env_file: ".um.env"
+    # environment:
     ports: 
-      - "${USER_MANAGEMENT_PORT}:8081"
+      - "8081:8081"
     networks:
         - igrp_network
     # restart: on-failure
 
   # App management API 
   app-manager-api:
-    build: ./app-manager-api/
+    # build: ./app-manager-api/
+    image: registry.nosi.cv/bittortest/app-manager-api:demo
     env_file: ".env"
     container_name: app-manager
     ports: 
@@ -125,7 +128,8 @@ services:
 
   # IGRP UI
   app:
-    build: ./igrp-ui/
+    # build: ./igrp-ui/
+    image: registry.nosi.cv/bittortest/igrp-ui-dev:demo
     env_file: ".env"
     container_name: igrp-ui
     ports: 
