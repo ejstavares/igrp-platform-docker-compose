@@ -138,6 +138,13 @@ This file ensures that the User Management service is authenticated as a separat
 - Ensure that the sensitive `KEYCLOAK_CLIENT_SECRET` values are properly secured and not exposed in public repositories.
 ---
 
+## Minimum requirements (aproximation)
+
+The following requeriments are taken from the environment where this has been tested, therefore use it as an aproximation. Other (or lesser) requirements can be tested under your own risk.
+
+- **Memory**: 8GB RAM 
+- **Processor**: 12th Gen Intel Core i5
+
 ## How to execute
 
 Before anything, clone the required repositories in the root folder:
