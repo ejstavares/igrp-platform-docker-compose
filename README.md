@@ -206,8 +206,11 @@ docker exec -it $(docker ps --filter "name=keycloak" --format "{{.ID}}") bash
 ### 3. Export the realm 
 Once inside the container, get the `quickstart` realm and export it.
 ```
-/opt/keycloak/bin/kc.sh export --dir /opt/keycloak/data/import --users realm_file --realm quickstart
+/opt/keycloak/bin/kc.sh export --dir /opt/keycloak/data/import --users realm_file --realm quickstart --http-management-port 8090
 ```
+> Note: If there is a permission error with the folder/file creation for the given realm, it may be due to lack of permissions while replacing a conflicting/existing file. Make sure to delete it if so or change the destination folder in `--dir`.
+
+> Note 2: If there is an error with conflicting ports, it may be due to the management interface server conflicting with the container port. If this happens, simply change the port in `--http-management-port`.
 
 ### 4. Exit the container
 Simply use the exit command
