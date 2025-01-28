@@ -31,7 +31,7 @@ services:
       # - show-config
       - --features=admin-fine-grained-authz
     environment:
-      KC_HOSTNAME: http://${KEYCLOAK_HOSTNAME}:8080
+      KC_HOSTNAME: http://${KEYCLOAK_HOSTNAME}:${KEYCLOAK_HOSTNAME_PORT}
       KC_HOSTNAME_PORT: ${KEYCLOAK_HOSTNAME_PORT}
       KC_HOSTNAME_STRICT_BACKCHANNEL: false
       KC_HTTP_ENABLED: true
@@ -48,7 +48,7 @@ services:
     volumes:
       - ./data/:/opt/keycloak/data/import
     ports:
-      - 8080:8080
+      - ${KEYCLOAK_HOSTNAME_PORT}:${KEYCLOAK_HOSTNAME_PORT}
     restart: always
     extra_hosts:
       - "${KEYCLOAK_HOSTNAME}:host-gateway"
@@ -80,6 +80,8 @@ services:
     ports:
       - "9000:9000"
       - "9001:9001"
+    networks:
+        - igrp_network
     command: server /data --console-address :9001
     entrypoint: >
       /bin/sh -c '
@@ -97,7 +99,7 @@ services:
   # User management API 
   user-management-api:
     # build: ./igrp-user-management-api/
-    image: registry.nosi.cv/bittortest/igrp-user-management-api:demo
+    image: registry.nosi.cv/formacao-igrp/igrp-user-management-api:demo-local
     depends_on:
         keycloak:
             condition: service_healthy
@@ -115,8 +117,8 @@ services:
   # App management API 
   app-manager-api:
     # build: ./app-manager-api/
-    image: registry.nosi.cv/bittortest/app-manager-api:demo
-    env_file: ".env"
+    image: registry.nosi.cv/formacao-igrp/app-manager-api:demo-local
+    env_file: ".am.env"
     container_name: app-manager
     ports: 
       - "8082:8082"
@@ -129,7 +131,7 @@ services:
   # IGRP UI
   app:
     # build: ./igrp-ui/
-    image: registry.nosi.cv/bittortest/igrp-ui-dev:demo
+    image: registry.nosi.cv/formacao-igrp/igrp-ui-dev:demo-local
     env_file: ".env"
     container_name: igrp-ui
     ports: 
