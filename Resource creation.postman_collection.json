@@ -1,0 +1,70 @@
+{
+	"info": {
+		"_postman_id": "5cedc965-dc7b-48b5-bde9-07ae437d7d6a",
+		"name": "Resource creation",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "38789822"
+	},
+	"item": [
+		{
+			"name": "Create Resource - API",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"type\": \"UI\",\r\n  \"url\": \"http://example.com/resource9\",\r\n  \"description\": \"Descripción del recurso.\",\r\n  \"resourceItems\": [\r\n        {\r\n            \"name\": \"si\",\r\n            \"url\": \"http://example.com/resource9\",\r\n            \"resourceItemType\": \"PAGE\",\r\n            \"description\": \"Descripción del recurso.\"\r\n        }\r\n    ],\r\n    \"identityConfig\": {\r\n        \"application\": \"app1\",\r\n        \"homeUrl\": \"http://localhost\",\r\n        \"name\": \"app1-resource9\",\r\n        \"description\": \"Description for test application\",\r\n        \"endpoints\": [\r\n            {\r\n            \"name\": \"Test get\",\r\n            \"methods\": [\"GET\"],\r\n            \"path\": \"/api/test-endpoint\",\r\n            \"permission\": \"test-permission\"\r\n            },\r\n            {\r\n            \"name\": \"Test post\",\r\n            \"methods\": [\"POST\"],\r\n            \"path\": \"/api/another-endpoint\",\r\n            \"permission\": \"admin-permission\"\r\n            }\r\n        ]\r\n    }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/apps/1/resources",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"apps",
+						"1",
+						"resources"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create Resource - Page",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n  \"type\": \"UI\",\r\n  \"url\": \"http://example.com/resource9\",\r\n  \"description\": \"Descripción del recurso.\",\r\n  \"resourceItems\": [\r\n        {\r\n            \"name\": \"si\",\r\n            \"url\": \"http://example.com/resource9\",\r\n            \"resourceItemType\": \"PAGE\",\r\n            \"description\": \"Descripción del recurso.\"\r\n        }\r\n    ]\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:8082/apps/1/resources",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8082",
+					"path": [
+						"apps",
+						"1",
+						"resources"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
