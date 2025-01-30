@@ -1,4 +1,4 @@
-# APIs_test-environment
+# IGRP Platform Docker Compose
 
 Repository to manage and populated a testing environment with all the required connectivity between User Management API, App Manager API, Keycloak and their DB. 
 
@@ -155,27 +155,27 @@ The following requeriments are taken from the environment where this has been te
 
 - **Memory**: 8GB RAM 
 - **Processor**: 12th Gen Intel Core i5
-
 ## How to execute
 
-Before anything, clone the required repositories in the root folder:
-1. The User Management API on the `feature/demo-integration` branch:
-```
- git clone -b feature/demo-integration http://git.nosi.cv/igrp-3_0/igrp-user-management-api.git
-```
+<!-- Before anything, clone the required repositories in the root folder: -->
+<!-- 1. The User Management API on the `feature/demo-integration` branch: -->
+<!-- ``` -->
+<!--  git clone -b feature/demo-integration http://git.nosi.cv/igrp-3_0/igrp-user-management-api.git -->
+<!-- ``` -->
+<!---->
+<!-- 2. The App Manager API on the `feature/demo-integration` branch: -->
+<!-- ``` -->
+<!--  git clone -b feature/demo-integration http://git.nosi.cv/igrp-3_0/app-manager-api.git -->
+<!-- ``` -->
+<!-- 3. The IGRP UI on the `feature/demo-integration` branch: -->
+<!-- ``` -->
+<!--  git clone -b feature/demo-integration http://git.nosi.cv/igrp-3_0/igrp-ui.git -->
+<!-- ``` -->
+<!---->
+<!-- This is to have access to all of them.  -->
+<!---->
 
-2. The App Manager API on the `feature/demo-integration` branch:
-```
- git clone -b feature/demo-integration http://git.nosi.cv/igrp-3_0/app-manager-api.git
-```
-3. The IGRP UI on the `feature/demo-integration` branch:
-```
- git clone -b feature/demo-integration http://git.nosi.cv/igrp-3_0/igrp-ui.git
-```
-
-This is to have access to all of them. 
-
-Then, simply execute the docker compose file. Notice that Docker must be installed along with the Compose plugin. In case a modification is done to the source code, execute the following command to not use the cache:
+Simply execute the docker compose file. Notice that Docker must be installed along with the Compose plugin. In case a modification is done to the source code, execute the following command to not use the cache:
 ```
 docker-compose up --force-recreate
 ```
@@ -188,6 +188,8 @@ Once this is done, both APIs should be ready to use along with a Keycloak realm 
 
 
 ## Export/Import a Keycloak realm from a docker container
+
+> **Note:** This is not needed to execute the project. This is only for saving configuration realm in Keycloak.
 
 In case any changes are to be uploaded when initializing the Keycloak Docker, these must be first exported as a json realm. To do so, follow these steps:
 
@@ -239,5 +241,6 @@ docker cp $(docker ps --filter "name=keycloak" --format "{{.ID}}"):/opt/keycloak
 
 
 That's it. The new realm should be able after re-executing the docker compose.
+
 
 
