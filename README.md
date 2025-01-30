@@ -4,6 +4,17 @@ Repository to manage and populated a testing environment with all the required c
 
 Notice that all the connections and variables are setted in the `.env` file, thereby modifying will have an impact in the whole system.
 
+# Hosts file
+Before starting the containers, you must specify the hostnames in your local machine for the local DNS to resolve them, otherwise you won't be able to use them. This can be do so by modifying the hosts file in your machine, which varies depending on the OS. 
+
+```
+127.0.0.1 keycloak
+127.0.0.1 igrp-ui
+127.0.0.1 user-management-api
+127.0.0.1 app-manager-api
+127.0.0.1 minio
+```
+
 # Environment Variables Documentation
 
 ## Database Configuration
