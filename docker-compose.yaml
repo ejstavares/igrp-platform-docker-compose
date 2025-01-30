@@ -75,7 +75,7 @@ services:
       MINIO_ROOT_USER: ${MINIO_ACCESS_KEY}
       MINIO_ROOT_PASSWORD: ${MINIO_SECRET_KEY}
     volumes:
-      - ./data:/minio_data
+      - ./minio_data:/data
     ports:
       - "9000:9000"
       - "9001:9001"
@@ -99,6 +99,7 @@ services:
   user-management-api:
     # build: ./igrp-user-management-api/
     image: registry.nosi.cv/formacao-igrp/igrp-user-management-api:demo-local
+    platform: linux/amd64
     depends_on:
         keycloak:
             condition: service_healthy
@@ -117,6 +118,7 @@ services:
   app-manager-api:
     # build: ./app-manager-api/
     image: registry.nosi.cv/formacao-igrp/app-manager-api:demo-local
+    platform: linux/amd64
     env_file: ".am.env"
     container_name: app-manager
     ports: 
@@ -131,6 +133,7 @@ services:
   app:
     # build: ./igrp-ui/
     image: registry.nosi.cv/formacao-igrp/igrp-ui-dev:demo-local
+    platform: linux/amd64
     env_file: ".env"
     container_name: igrp-ui
     ports: 
