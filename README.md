@@ -155,7 +155,7 @@ The following requeriments are taken from the environment where this has been te
 
 - **Memory**: 8GB RAM 
 - **Processor**: 12th Gen Intel Core i5
-
+<!---
 ## How to execute
 
 Before anything, clone the required repositories in the root folder:
@@ -239,5 +239,7 @@ docker cp $(docker ps --filter "name=keycloak" --format "{{.ID}}"):/opt/keycloak
 
 
 That's it. The new realm should be able after re-executing the docker compose.
+
+>
 
 
